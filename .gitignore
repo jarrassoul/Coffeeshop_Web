@@ -36,11 +36,3 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-
-# editor / assistant artifacts (generated locally, not part of the repo)
-AGENTS.md
-CLAUDE.md
-.idea/
-.qoder/
-.vscode/*
-!.vscode/extensions.json
