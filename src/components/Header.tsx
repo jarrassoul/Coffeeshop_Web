@@ -1,3 +1,5 @@
+import CartButton from "@/components/CartButton";
+
 const navLinks = [
   { href: "#menu", label: "Menu" },
   { href: "#about", label: "About" },
@@ -21,6 +23,7 @@ export default function Header() {
               {link.label}
             </a>
           ))}
+          <CartButton />
         </nav>
       </div>
     </header>
