@@ -1,0 +1,46 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# database (local Prisma/SQLite artifacts)
+/prisma/*.db
+/prisma/*.db-journal
+
+# environment variables — never commit secrets
+.env
+.env.*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# editor / assistant artifacts (generated locally, not part of the repo)
+AGENTS.md
+CLAUDE.md
+.idea/
+.qoder/
+.vscode/*
+!.vscode/extensions.json
