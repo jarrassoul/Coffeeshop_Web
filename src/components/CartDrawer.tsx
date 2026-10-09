@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/cart";
 import { formatPrice } from "@/lib/products";
 
@@ -9,8 +10,14 @@ type CartDrawerProps = {
 };
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
+  const router = useRouter();
   const { lines, subtotal, addItem, decrementItem, removeItem, clearCart } =
     useCart();
+
+  function handleCheckout() {
+    onClose();
+    router.push("/checkout");
+  }
 
   return (
     <>
@@ -101,6 +108,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
           </div>
           <button
             type="button"
+            onClick={handleCheckout}
             disabled={lines.length === 0}
             className="flex h-11 items-center justify-center rounded-full bg-foreground text-background transition-colors hover:bg-[#383838] disabled:cursor-default disabled:opacity-50 dark:hover:bg-[#ccc]"
           >
