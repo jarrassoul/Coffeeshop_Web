@@ -1,6 +1,9 @@
 import MenuGrid from "@/components/MenuGrid";
+import { getProducts } from "@/lib/products-db";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getProducts();
+
   return (
     <div
       id="top"
@@ -24,7 +27,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
             Menu
           </h2>
-          <MenuGrid />
+          <MenuGrid products={products} />
         </section>
 
         <section id="about" className="flex flex-col gap-3">

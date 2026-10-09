@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/context/cart";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getProducts } from "@/lib/products-db";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,14 +22,16 @@ export const metadata: Metadata = {
     "Neighborhood coffeeshop serving freshly roasted coffee, espresso drinks, and pastries baked in-house every day.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const products = await getProducts();
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <CartProvider>
+        <CartProvider products={products}>
           <Header />
           {children}
           <Footer />

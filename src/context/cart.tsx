@@ -9,7 +9,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { products, type Product } from "@/lib/products";
+import { type Product } from "@/lib/products";
 
 const STORAGE_KEY = "coffeeshop.cart";
 
@@ -29,7 +29,7 @@ type CartAction =
 
 // Keeps only entries that map to a known product with a positive integer qty,
 // guarding against corrupt or stale localStorage payloads.
-function sanitizeCart(value: unknown): CartState {
+function sanitizeCart(value: unknown, products: Product[]): CartState {
   if (!value || typeof value !== "object") return {};
   const known = new Set(products.map((product) => product.id));
   const result: CartState = {};
@@ -82,7 +82,13 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({
+  children,
+  products,
+}: {
+  children: ReactNode;
+  products: Product[];
+}) {
   const [state, dispatch] = useReducer(cartReducer, {});
   const isFirstPersist = useRef(true);
 
@@ -91,12 +97,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        dispatch({ type: "hydrate", state: sanitizeCart(JSON.parse(raw)) });
+        dispatch({
+          type: "hydrate",
+          state: sanitizeCart(JSON.parse(raw), products),
+        });
       }
     } catch {
       // Ignore unreadable or corrupt storage.
     }
-  }, []);
+  }, [products]);
 
   // Persist on every change, skipping the initial mount so an empty cart
   // never overwrites stored data before hydration completes.
@@ -135,7 +144,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem: (id) => dispatch({ type: "remove", id }),
       clearCart: () => dispatch({ type: "clear" }),
     };
-  }, [state]);
+  }, [state, products]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

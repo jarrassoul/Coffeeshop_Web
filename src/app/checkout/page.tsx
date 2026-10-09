@@ -4,14 +4,31 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/cart";
 import { formatPrice } from "@/lib/products";
+import { placeOrder } from "./actions";
 
 export default function CheckoutPage() {
   const { lines, subtotal, clearCart } = useCart();
-  const [placed, setPlaced] = useState(false);
+  const [order, setOrder] = useState<{ id: string; total: number } | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handlePlaceOrder() {
+  async function handlePlaceOrder() {
+    setPending(true);
+    setError(null);
+    const result = await placeOrder(
+      lines.map(({ product, quantity }) => ({
+        productId: product.id,
+        quantity,
+      })),
+    );
+    if (!result.ok) {
+      setError(result.error);
+      setPending(false);
+      return;
+    }
     clearCart();
-    setPlaced(true);
+    setOrder({ id: result.orderId, total: result.total });
+    setPending(false);
   }
 
   return (
@@ -21,15 +38,27 @@ export default function CheckoutPage() {
           Checkout
         </h1>
 
-        {placed ? (
+        {order ? (
           <section className="flex flex-col gap-4 rounded-2xl border border-black/[.08] bg-white p-8 dark:border-white/[.145] dark:bg-zinc-950">
             <h2 className="text-xl font-semibold tracking-tight">
               Thanks for your order!
             </h2>
             <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-              Your order has been placed and will be ready shortly. This is a
-              demo checkout, so no payment was taken.
+              We saved your order and it will be ready shortly. This is a demo
+              checkout, so no payment was taken.
             </p>
+            <dl className="flex flex-col gap-1 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500 dark:text-zinc-400">Order</dt>
+                <dd className="font-mono">{order.id}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500 dark:text-zinc-400">Total</dt>
+                <dd className="font-semibold">
+                  ${formatPrice(order.total)}
+                </dd>
+              </div>
+            </dl>
             <Link
               href="/#menu"
               className="mt-2 flex h-11 w-fit items-center justify-center rounded-full bg-foreground px-5 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
@@ -77,12 +106,19 @@ export default function CheckoutPage() {
               <span>${formatPrice(subtotal)}</span>
             </div>
 
+            {error ? (
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                {error}
+              </p>
+            ) : null}
+
             <button
               type="button"
               onClick={handlePlaceOrder}
-              className="flex h-11 items-center justify-center rounded-full bg-foreground text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
+              disabled={pending}
+              className="flex h-11 items-center justify-center rounded-full bg-foreground text-background transition-colors hover:bg-[#383838] disabled:cursor-default disabled:opacity-60 dark:hover:bg-[#ccc]"
             >
-              Place order
+              {pending ? "Placing order..." : "Place order"}
             </button>
           </section>
         )}
