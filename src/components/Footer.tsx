@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer
@@ -6,7 +8,15 @@ export default function Footer() {
     >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-10 text-sm text-zinc-600 dark:text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
         <p>123 Roastery Lane, Springfield</p>
-        <p>Open daily, 7:00 AM - 6:00 PM</p>
+        <div className="flex items-center gap-4">
+          <p>Open daily, 7:00 AM - 6:00 PM</p>
+          <Link
+            href="/orders"
+            className="underline underline-offset-4 transition-colors hover:text-black dark:hover:text-zinc-100"
+          >
+            Orders
+          </Link>
+        </div>
       </div>
     </footer>
   );
