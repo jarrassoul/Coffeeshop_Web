@@ -3,11 +3,15 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
+  useRef,
   type ReactNode,
 } from "react";
 import { products, type Product } from "@/lib/products";
+
+const STORAGE_KEY = "coffeeshop.cart";
 
 export type CartLine = {
   product: Product;
@@ -20,7 +24,22 @@ type CartAction =
   | { type: "add"; id: string }
   | { type: "decrement"; id: string }
   | { type: "remove"; id: string }
-  | { type: "clear" };
+  | { type: "clear" }
+  | { type: "hydrate"; state: CartState };
+
+// Keeps only entries that map to a known product with a positive integer qty,
+// guarding against corrupt or stale localStorage payloads.
+function sanitizeCart(value: unknown): CartState {
+  if (!value || typeof value !== "object") return {};
+  const known = new Set(products.map((product) => product.id));
+  const result: CartState = {};
+  for (const [id, quantity] of Object.entries(value as Record<string, unknown>)) {
+    if (known.has(id) && typeof quantity === "number" && quantity >= 1) {
+      result[id] = Math.floor(quantity);
+    }
+  }
+  return result;
+}
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -43,6 +62,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
     case "clear":
       return {};
+    case "hydrate":
+      return action.state;
     default:
       return state;
   }
@@ -63,6 +84,33 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, {});
+  const isFirstPersist = useRef(true);
+
+  // Load the persisted cart once on mount (client only).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        dispatch({ type: "hydrate", state: sanitizeCart(JSON.parse(raw)) });
+      }
+    } catch {
+      // Ignore unreadable or corrupt storage.
+    }
+  }, []);
+
+  // Persist on every change, skipping the initial mount so an empty cart
+  // never overwrites stored data before hydration completes.
+  useEffect(() => {
+    if (isFirstPersist.current) {
+      isFirstPersist.current = false;
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // Ignore write failures (e.g. private mode / quota).
+    }
+  }, [state]);
 
   const value = useMemo<CartContextValue>(() => {
     const lines: CartLine[] = Object.entries(state).flatMap(
