@@ -8,17 +8,20 @@ const navLinks = [
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-10 border-b border-black/[.08] bg-white/80 backdrop-blur dark:border-white/[.145] dark:bg-black/60">
+    <header className="sticky top-0 z-10 border-b border-amber-100 bg-white/85 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
-        <a href="#top" className="text-lg font-semibold tracking-tight">
-          Coffeeshop
+        <a
+          href="#top"
+          className="text-lg font-bold tracking-tight text-stone-800"
+        >
+          Date &amp; Maple Cafe
         </a>
-        <nav className="flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+        <nav className="flex items-center gap-6 text-sm font-medium text-stone-600">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="transition-colors hover:text-zinc-950 dark:hover:text-zinc-50"
+              className="transition-colors hover:text-amber-700"
             >
               {link.label}
             </a>

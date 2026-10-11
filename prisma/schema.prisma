@@ -11,7 +11,8 @@ model Product {
   id          String      @id
   name        String
   description String
-  price       Float
+  // Money is stored as integer cents so totals never drift on floats.
+  priceCents  Int
   category    String
   position    Int         @default(0)
   orderItems  OrderItem[]
@@ -22,16 +23,40 @@ model Order {
   createdAt    DateTime    @default(now())
   customerName String
   pickupTime   String?
-  total        Float
+  // Fulfilment lifecycle: Pending -> Preparing -> Ready -> Completed.
+  status       String      @default("Pending")
+  totalCents   Int
   items        OrderItem[]
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
+  id              String  @id @default(cuid())
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  quantity        Int
+  // Unit price captured at checkout, in integer cents.
+  unitAmountCents Int
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  // scrypt hash: "<16-byte salt hex>:<64-byte derived key hex>".
+  passwordHash String
+  // JSON-encoded string[] of adminPages keys (SQLite has no array type).
+  permissions  String        @default("[]")
+  isAdmin      Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  sessions     AuthSession[]
+}
+
+model AuthSession {
+  token     String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }

@@ -13,10 +13,10 @@ export default function CartButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 items-center justify-center gap-2 rounded-full border border-black/[.08] px-4 text-sm font-medium transition-colors hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-white/[.08]"
+        className="flex h-9 items-center justify-center gap-2 rounded-full border border-amber-200 px-4 text-sm font-medium text-stone-700 transition-colors hover:bg-amber-50"
       >
         Cart
-        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-xs font-semibold text-background">
+        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-700 px-1 text-xs font-semibold text-white">
           {count}
         </span>
       </button>

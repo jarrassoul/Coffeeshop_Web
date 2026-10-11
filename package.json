@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:admin": "set DIST_DIR=.next-admin&& next dev --port 3001",
+    "dev:all": "concurrently --kill-others -n customer,admin -c cyan,magenta \"npm run dev\" \"npm run dev:admin\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -30,12 +32,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^10.0.5",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.9",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^6.19.3",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"

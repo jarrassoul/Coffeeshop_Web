@@ -1,24 +1,11 @@
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
-
-export type OrderItemView = {
-  name: string;
-  quantity: number;
-  price: number;
-};
-
-export type OrderView = {
-  id: string;
-  createdAt: Date;
-  customerName: string;
-  pickupTime: string | null;
-  total: number;
-  items: OrderItemView[];
-};
+import type { AdminOrder, OrderStatus } from "@/lib/admin";
 
 // Wrapped in React's cache() so multiple reads within one server render pass
-// share a single query.
-export const getOrders = cache(async (): Promise<OrderView[]> => {
+// share a single query. Money is stored as integer cents and converted to
+// dollars here so the admin API/UI can render it directly.
+export const getOrders = cache(async (): Promise<AdminOrder[]> => {
   const rows = await prisma.order.findMany({
     orderBy: { createdAt: "desc" },
     include: { items: { include: { product: true } } },
@@ -26,14 +13,15 @@ export const getOrders = cache(async (): Promise<OrderView[]> => {
 
   return rows.map((order) => ({
     id: order.id,
-    createdAt: order.createdAt,
     customerName: order.customerName,
     pickupTime: order.pickupTime,
-    total: order.total,
+    status: order.status as OrderStatus,
+    total: order.totalCents / 100,
+    createdAt: order.createdAt.toISOString(),
     items: order.items.map((item) => ({
       name: item.product.name,
       quantity: item.quantity,
-      price: item.price,
+      unitPrice: item.unitAmountCents / 100,
     })),
   }));
 });

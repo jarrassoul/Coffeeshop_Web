@@ -8,6 +8,7 @@
 
 # next.js
 /.next/
+/.next-admin/
 /out/
 /build
 next-env.d.ts

@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { CartProvider } from "@/context/cart";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { getProducts } from "@/lib/products-db";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,25 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coffeeshop | Great coffee, made simply",
+  title: "Date & Maple Cafe",
   description:
-    "Neighborhood coffeeshop serving freshly roasted coffee, espresso drinks, and pastries baked in-house every day.",
+    "Date & Maple Cafe — hand-crafted coffee, fresh pastries, and cozy vibes. Order online for pickup.",
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const products = await getProducts();
-
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <CartProvider products={products}>
-          <Header />
-          {children}
-          <Footer />
-        </CartProvider>
+      {/* suppressHydrationWarning: browser extensions (e.g. Grammarly) inject
+          attributes into <body> before React hydrates; ignore that mismatch. */}
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        {children}
       </body>
     </html>
   );

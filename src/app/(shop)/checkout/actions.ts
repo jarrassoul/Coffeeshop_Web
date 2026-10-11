@@ -42,32 +42,42 @@ export async function placeOrder(
     return { ok: false, error: "Your cart is empty." };
   }
 
-  // Prices are always read from the database, never trusted from the client.
+  // Prices are always read from the database (in integer cents), never
+  // trusted from the client.
   const products = await prisma.product.findMany({
     where: { id: { in: cleaned.map((line) => line.productId) } },
   });
-  const priceById = new Map(products.map((product) => [product.id, product.price]));
+  const priceById = new Map(
+    products.map((product) => [product.id, product.priceCents]),
+  );
 
   const items = cleaned.flatMap((line) => {
-    const price = priceById.get(line.productId);
-    if (price === undefined) return [];
-    return [{ productId: line.productId, quantity: line.quantity, price }];
+    const unitAmountCents = priceById.get(line.productId);
+    if (unitAmountCents === undefined) return [];
+    return [
+      { productId: line.productId, quantity: line.quantity, unitAmountCents },
+    ];
   });
 
   if (items.length === 0) {
     return { ok: false, error: "No valid products in your cart." };
   }
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalCents = items.reduce(
+    (sum, item) => sum + item.unitAmountCents * item.quantity,
+    0,
+  );
 
   const order = await prisma.order.create({
     data: {
       customerName,
       pickupTime,
-      total,
+      totalCents,
+      // status defaults to "Pending" in the schema.
       items: { create: items },
     },
   });
 
-  return { ok: true, orderId: order.id, total };
+  // The confirmation UI shows dollars, so convert back for display.
+  return { ok: true, orderId: order.id, total: totalCents / 100 };
 }

@@ -8,7 +8,9 @@ import { placeOrder } from "./actions";
 
 export default function CheckoutPage() {
   const { lines, subtotal, clearCart } = useCart();
-  const [order, setOrder] = useState<{ id: string; total: number } | null>(null);
+  const [order, setOrder] = useState<{ id: string; total: number } | null>(
+    null,
+  );
   const [customerName, setCustomerName] = useState("");
   const [pickupTime, setPickupTime] = useState("");
   const [pending, setPending] = useState(false);
@@ -40,52 +42,52 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex flex-1 flex-col bg-amber-50/40 font-sans">
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-16">
-        <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
+        <h1 className="text-3xl font-bold tracking-tight text-stone-800">
           Checkout
         </h1>
 
         {order ? (
-          <section className="flex flex-col gap-4 rounded-2xl border border-black/[.08] bg-white p-8 dark:border-white/[.145] dark:bg-zinc-950">
-            <h2 className="text-xl font-semibold tracking-tight">
+          <section className="flex flex-col gap-4 rounded-2xl border border-amber-100 bg-white p-8 shadow-sm">
+            <h2 className="text-xl font-semibold tracking-tight text-stone-800">
               Thanks for your order!
             </h2>
-            <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm leading-6 text-stone-600">
               We saved your order and it will be ready shortly. This is a demo
               checkout, so no payment was taken.
             </p>
             <dl className="flex flex-col gap-1 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-zinc-500 dark:text-zinc-400">Order</dt>
-                <dd className="font-mono">{order.id}</dd>
+                <dt className="text-stone-500">Order</dt>
+                <dd className="font-mono text-stone-800">{order.id}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-zinc-500 dark:text-zinc-400">Total</dt>
-                <dd className="font-semibold">${formatPrice(order.total)}</dd>
+                <dt className="text-stone-500">Total</dt>
+                <dd className="font-semibold text-stone-800">
+                  ${formatPrice(order.total)}
+                </dd>
               </div>
             </dl>
             <Link
               href="/#menu"
-              className="mt-2 flex h-11 w-fit items-center justify-center rounded-full bg-foreground px-5 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
+              className="mt-2 flex h-11 w-fit items-center justify-center rounded-full bg-amber-700 px-5 text-sm font-medium text-white transition-colors hover:bg-amber-800"
             >
               Back to menu
             </Link>
           </section>
         ) : lines.length === 0 ? (
-          <section className="flex flex-col gap-4 rounded-2xl border border-black/[.08] bg-white p-8 dark:border-white/[.145] dark:bg-zinc-950">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Your cart is empty.
-            </p>
+          <section className="flex flex-col gap-4 rounded-2xl border border-amber-100 bg-white p-8 shadow-sm">
+            <p className="text-sm text-stone-600">Your cart is empty.</p>
             <Link
               href="/#menu"
-              className="flex h-11 w-fit items-center justify-center rounded-full bg-foreground px-5 text-sm font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
+              className="flex h-11 w-fit items-center justify-center rounded-full bg-amber-700 px-5 text-sm font-medium text-white transition-colors hover:bg-amber-800"
             >
               Browse the menu
             </Link>
           </section>
         ) : (
-          <section className="flex flex-col gap-6 rounded-2xl border border-black/[.08] bg-white p-6 dark:border-white/[.145] dark:bg-zinc-950">
+          <section className="flex flex-col gap-6 rounded-2xl border border-amber-100 bg-white p-6 shadow-sm">
             <ul className="flex flex-col gap-4">
               {lines.map(({ product, quantity }) => (
                 <li
@@ -93,23 +95,23 @@ export default function CheckoutPage() {
                   className="flex items-center justify-between gap-4"
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold">
+                    <span className="text-sm font-semibold text-stone-800">
                       {product.name}
                     </span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <span className="text-xs text-stone-500">
                       {quantity} x ${formatPrice(product.price)}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold">
+                  <span className="text-sm font-semibold text-stone-800">
                     ${formatPrice(product.price * quantity)}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <div className="flex flex-col gap-4 border-t border-black/[.08] pt-4 dark:border-white/[.145]">
+            <div className="flex flex-col gap-4 border-t border-amber-100 pt-4">
               <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                <span className="font-medium text-stone-700">
                   Name for the order
                 </span>
                 <input
@@ -118,38 +120,36 @@ export default function CheckoutPage() {
                   onChange={(event) => setCustomerName(event.target.value)}
                   placeholder="e.g. Alex"
                   maxLength={80}
-                  className="h-11 rounded-xl border border-black/[.08] bg-white px-3 text-sm outline-none focus:border-black/30 dark:border-white/[.145] dark:bg-black dark:focus:border-white/30"
+                  className="h-11 rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-800 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-zinc-700 dark:text-zinc-300">
-                  Pickup time <span className="text-zinc-400">(optional)</span>
+                <span className="font-medium text-stone-700">
+                  Pickup time <span className="text-stone-400">(optional)</span>
                 </span>
                 <input
                   type="time"
                   value={pickupTime}
                   onChange={(event) => setPickupTime(event.target.value)}
-                  className="h-11 w-fit rounded-xl border border-black/[.08] bg-white px-3 text-sm outline-none focus:border-black/30 dark:border-white/[.145] dark:bg-black dark:focus:border-white/30"
+                  className="h-11 w-fit rounded-xl border border-stone-300 bg-white px-3 text-sm text-stone-800 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
                 />
               </label>
             </div>
 
-            <div className="flex items-center justify-between border-t border-black/[.08] pt-4 text-base font-semibold dark:border-white/[.145]">
+            <div className="flex items-center justify-between border-t border-amber-100 pt-4 text-base font-semibold text-stone-800">
               <span>Total</span>
               <span>${formatPrice(subtotal)}</span>
             </div>
 
             {error ? (
-              <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                {error}
-              </p>
+              <p className="text-sm font-medium text-red-600">{error}</p>
             ) : null}
 
             <button
               type="button"
               onClick={handlePlaceOrder}
               disabled={pending}
-              className="flex h-11 items-center justify-center rounded-full bg-foreground text-background transition-colors hover:bg-[#383838] disabled:cursor-default disabled:opacity-60 dark:hover:bg-[#ccc]"
+              className="flex h-11 items-center justify-center rounded-full bg-amber-700 text-white transition-colors hover:bg-amber-800 disabled:cursor-default disabled:opacity-60"
             >
               {pending ? "Placing order..." : "Place order"}
             </button>
