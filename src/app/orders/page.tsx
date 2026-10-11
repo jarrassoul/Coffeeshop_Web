@@ -52,6 +52,21 @@ export default async function OrdersPage() {
                   </span>
                 </div>
 
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-base font-semibold text-black dark:text-zinc-50">
+                    {order.customerName}
+                  </span>
+                  {order.pickupTime ? (
+                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                      Pickup at {order.pickupTime}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-zinc-400 dark:text-zinc-500">
+                      No pickup time given
+                    </span>
+                  )}
+                </div>
+
                 <ul className="flex flex-col gap-2">
                   {order.items.map((item, index) => (
                     <li

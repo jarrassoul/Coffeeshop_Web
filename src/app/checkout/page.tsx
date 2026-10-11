@@ -9,18 +9,26 @@ import { placeOrder } from "./actions";
 export default function CheckoutPage() {
   const { lines, subtotal, clearCart } = useCart();
   const [order, setOrder] = useState<{ id: string; total: number } | null>(null);
+  const [customerName, setCustomerName] = useState("");
+  const [pickupTime, setPickupTime] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handlePlaceOrder() {
+    if (customerName.trim().length === 0) {
+      setError("Please enter a name for the order.");
+      return;
+    }
     setPending(true);
     setError(null);
-    const result = await placeOrder(
-      lines.map(({ product, quantity }) => ({
+    const result = await placeOrder({
+      customerName,
+      pickupTime,
+      lines: lines.map(({ product, quantity }) => ({
         productId: product.id,
         quantity,
       })),
-    );
+    });
     if (!result.ok) {
       setError(result.error);
       setPending(false);
@@ -54,9 +62,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-zinc-500 dark:text-zinc-400">Total</dt>
-                <dd className="font-semibold">
-                  ${formatPrice(order.total)}
-                </dd>
+                <dd className="font-semibold">${formatPrice(order.total)}</dd>
               </div>
             </dl>
             <Link
@@ -100,6 +106,33 @@ export default function CheckoutPage() {
                 </li>
               ))}
             </ul>
+
+            <div className="flex flex-col gap-4 border-t border-black/[.08] pt-4 dark:border-white/[.145]">
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  Name for the order
+                </span>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(event) => setCustomerName(event.target.value)}
+                  placeholder="e.g. Alex"
+                  maxLength={80}
+                  className="h-11 rounded-xl border border-black/[.08] bg-white px-3 text-sm outline-none focus:border-black/30 dark:border-white/[.145] dark:bg-black dark:focus:border-white/30"
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                  Pickup time <span className="text-zinc-400">(optional)</span>
+                </span>
+                <input
+                  type="time"
+                  value={pickupTime}
+                  onChange={(event) => setPickupTime(event.target.value)}
+                  className="h-11 w-fit rounded-xl border border-black/[.08] bg-white px-3 text-sm outline-none focus:border-black/30 dark:border-white/[.145] dark:bg-black dark:focus:border-white/30"
+                />
+              </label>
+            </div>
 
             <div className="flex items-center justify-between border-t border-black/[.08] pt-4 text-base font-semibold dark:border-white/[.145]">
               <span>Total</span>

@@ -7,14 +7,31 @@ export type OrderLineInput = {
   quantity: number;
 };
 
+export type PlaceOrderInput = {
+  customerName: string;
+  pickupTime?: string | null;
+  lines: OrderLineInput[];
+};
+
 export type PlaceOrderResult =
   | { ok: true; orderId: string; total: number }
   | { ok: false; error: string };
 
+const MAX_NAME_LENGTH = 80;
+
 export async function placeOrder(
-  lines: OrderLineInput[],
+  input: PlaceOrderInput,
 ): Promise<PlaceOrderResult> {
-  const cleaned = lines
+  const customerName = input.customerName.trim();
+  if (customerName.length === 0) {
+    return { ok: false, error: "Please enter a name for the order." };
+  }
+  if (customerName.length > MAX_NAME_LENGTH) {
+    return { ok: false, error: "That name is too long." };
+  }
+  const pickupTime = input.pickupTime?.trim() || null;
+
+  const cleaned = input.lines
     .map((line) => ({
       productId: line.productId,
       quantity: Math.floor(line.quantity),
@@ -45,6 +62,8 @@ export async function placeOrder(
 
   const order = await prisma.order.create({
     data: {
+      customerName,
+      pickupTime,
       total,
       items: { create: items },
     },

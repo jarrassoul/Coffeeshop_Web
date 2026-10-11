@@ -18,10 +18,12 @@ model Product {
 }
 
 model Order {
-  id        String      @id @default(cuid())
-  createdAt DateTime    @default(now())
-  total     Float
-  items     OrderItem[]
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  customerName String
+  pickupTime   String?
+  total        Float
+  items        OrderItem[]
 }
 
 model OrderItem {

@@ -10,6 +10,8 @@ export type OrderItemView = {
 export type OrderView = {
   id: string;
   createdAt: Date;
+  customerName: string;
+  pickupTime: string | null;
   total: number;
   items: OrderItemView[];
 };
@@ -25,6 +27,8 @@ export const getOrders = cache(async (): Promise<OrderView[]> => {
   return rows.map((order) => ({
     id: order.id,
     createdAt: order.createdAt,
+    customerName: order.customerName,
+    pickupTime: order.pickupTime,
     total: order.total,
     items: order.items.map((item) => ({
       name: item.product.name,
